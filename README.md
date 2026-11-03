@@ -146,10 +146,6 @@ These are the choices this program makes where `rules/rules.txt` does not say:
 5. **Not folded when castling rights remain.** A position that still has castling rights is never flipped or mirrored.
 6. **Drill length and progress.** `drill [seed] [games]` plays `games` games, 1000 by default. The next run with the same seed continues the start sequence where the last one stopped.
 
-## Not built yet
-
-`rules/rules.txt` says games saved by the older six-move program can be merged from their history sections. That importer is not written yet. Keep old `game_files` folders aside (renamed) rather than in the new program's folder.
-
 ## Rust version
 
 The code is written for Rust 1.83: edition 2021, no outside crates, no newer standard-library calls, and Clippy's `incompatible_msrv` check reports nothing. It was built and tested with Rust 1.97, because 1.83 itself could not be downloaded where it was written. If 1.83 finds a problem, it will show up as a compile error, not as a change in behaviour.
