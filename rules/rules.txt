@@ -1,0 +1,612 @@
+PLAN FOR AGREEMENT. This is not implemented. Do not change the program until this text is agreed.
+
+List 3 and List 4 are built from past games. A finished game already contains its own future: for any saved move, the moves that come after it in that same game are its future. Nothing extra is saved. The archive does not hold future moves. List 3 and List 4 do not look ahead.
+
+The four lists used to be made by searching three full turns ahead, six individual moves, every legal line. From the standard starting position that search is 124,132,536 nodes, and a middlegame is larger. It took too long. That search is not used. Those counts are not a target.
+
+King and pawn against king is the endgame this plan solves. White has a king and a pawn and Black has a king, or the colors are reversed. The same method applies to king and rook against king. In an open middlegame, positions rarely repeat. There List 3 shows only exact past positions when they exist, and it cannot prove those positions.
+
+Step 1: When I select a chess piece, the program displays all its available legal moves.
+
+Step 2: Identifying Pieces Without Legal Moves
+
+If I select a chess piece that has no available legal moves, the program displays a message explaining that the selected piece cannot currently make a legal move.
+
+However, chess pieces without available legal moves must still be considered when identifying forming chess strategies in Step 8.
+
+A piece's inability to move legally does not automatically exclude it from contributing to a developing chess strategy.
+
+Step 3: Moving and Confirming a Chess Piece's Move
+
+If I select a chess piece that has available legal moves, I can choose a destination square by entering its two-character coordinate and pressing Enter.
+
+Before the move is finalized, I am asked whether I want to confirm it.
+
+If I enter "Y", the move is finalized, and the chess piece moves to the selected square.
+
+If I enter "N", the move is canceled, and the chess piece remains on its original square.
+
+The program then returns to Step 1, allowing me to select either the same chess piece or a different chess piece.
+
+After I select a piece, the program checks its available legal moves again.
+
+1. If the selected piece has legal moves, the program displays all available legal moves, and I can choose a destination square.
+2. If the selected piece has no legal moves, the program follows Step 2 and displays a message explaining that the piece cannot currently make a legal move. I can then return to Step 1 to select another piece.
+
+No changes are made to the chessboard until I confirm a legal move by entering "Y".
+
+When the move is a promotion, the program asks for the new piece before it asks for Y or N. The answers are q, r, b, and n, in either case, for queen, rook, bishop, and knight. Any other answer, including an empty line, is refused. The program asks for the piece again. It does not take that answer as a queen. End of input cancels the move. The board does not change until a recognized piece has been entered and the move is confirmed with Y.
+
+Confirmation does not wait for a search. There is no future search.
+
+Step 4: I want all the pieces on the board to have their available legal moves listed before and after a piece's move to a square is finalized. These lists should be recorded and kept in two separate files: one for White's turn and one for Black's turn.
+
+The legal-move listing is also what the position index stores for a saved position. The listing is in a fixed order so that "the first move" always means the same move: origin squares from a1 through h8, and for each origin the destination squares from a1 through h8. A promotion is ordered queen, then rook, then bishop, then knight. For a position stored in the index, this order is counted on the stored board of Step 15.3, after the color flip and the mirror. A position and its mirror image therefore list their moves in the same order and explore them in the same order.
+
+Step 5: Step 4 creates two separate files: one for White's turns and one for Black's turns. Each file should maintain a record of the previous four turns and the current turn for its respective player. The records should include all available legal moves before and after each move is finalized. No additional files are needed for Step 5 because the two files created in Step 4 will also serve as the history files for Step 5.
+
+The present turn is the current turn in that file. The past turns are the previous four turns in that file, or fewer when the game has not yet played four turns for that player. These five turns are the window for List 1. They are not the position index.
+
+Step 6: No Future Search and No Future Files
+
+The program does not examine three full turns ahead. It does not search six individual moves. It does not read the strategies on positions reached only by a search. It does not write a White future-search file or a Black future-search file. It does not keep a background search. It does not wait on a search when a move is confirmed.
+
+A perft command may still count legal move sequences, as a check that move generation is right. Perft writes no file and fills no list.
+
+The future of a saved move is the later moves of the same finished game. Those later moves are ordinary saved positions. They are not a second copy called a future.
+
+Step 7: I want the history files to be managed automatically so they remain organized, cleaned, and up to date as the game progresses. At the beginning of every new game, both history files are cleared, and the information needed for the new game is generated.
+
+Clearing the history files never clears the position index in Step 15. There are two working files, the White history file and the Black history file. There are no future-search working files.
+
+Step 8: Creating List 1 — Forming Chess Strategies
+
+List 1 identifies the strategies forming in the game being played.
+
+List 1 uses only:
+
+1. The present game's four past turns and one present turn. That is five turns, from the White or Black history file.
+2. The pre-made templates, which are the 20 strategies in Step 14.4.
+
+List 1 does not read the position index. List 1 does not look ahead. A strategy appears when the five turns meet its foundation, progress, or completion.
+
+From the standard starting position, Central Pawn Occupation already matches, because a friendly pawn stands on the d-file and on the e-file. That strategy is taking the center. List 1 is made automatically and already contains it. King Shelter also matches, because the king stands on e1 with a castling right, so the starting List 1 contains King Shelter as well. Each scores 30, as Step 14.2 says. The old score of 45 came from the retired search.
+
+List 1 is not made from a FEN. The history file already lists the pieces and the legal moves.
+
+After List 1 has been made, a trained network may add a labeled assessment beside it. That assessment does not replace List 1, does not change a score, and does not change which strategies are listed. It is not List 3.
+
+Step 9: The list created in Step 8 is sorted with the most fully developed strategy at the top and the least developed at the bottom. The order is Step 14.2.
+
+Step 10: Creating List 2 — Chess Strategy Captures
+
+List 2 identifies the opposing pieces that can be captured by the strategies in List 1.
+
+For each strategy, List 2 records:
+
+1. The name of the chess strategy.
+2. The chess piece belonging to the player that can make the capture.
+3. The opposing chess piece that can be captured.
+4. The square occupied by the capturing piece and the square occupied by the opposing piece.
+5. The potential cost of losing the capturing piece as a result of the capture.
+
+List 2 uses the legal moves on the board being played. It does not read the position index. The values are Step 14.3.
+
+Step 11: Sorting List 2 — Chess Capture Values
+
+List 2 is sorted from the most valuable capture to the least valuable capture, by Step 14.3: highest net value, highest expected gain, lowest potential loss, strategy name, SAN, victim square.
+
+Step 12: Creating List 3 from Past Games
+
+List 3 is made from the position index. It is not made by looking ahead. It is not made by storing future moves.
+
+For each legal move from the position being played, the program looks up that position and that move in the index. One row is one legal move. The rows are:
+
+1. Proven win in N moves.
+2. Proven draw.
+3. Tried before, with the pawn side's win count, draw count, and loss count.
+
+Whose counts these are: in king and pawn against king, the win, draw and loss counts are for the pawn side. In king and rook against king they are for the side with the rook. In any other position, such as a middlegame, they are for the side to move in that position. Below, "pawn side" means the side with the pawn or the rook, and in any other position it means the side to move.
+4. Never tried.
+
+A row that comes from a similar position, rather than from this exact position, is labeled "similar". A similar row is never proof.
+
+Each row also shows the strategy stages recorded for the position that this move led to in past games. The stages are the 20 templates. In king and pawn against king the stages that matter are Promotion and Passed-Pawn Advance.
+
+Scores 45 and 75 on a List 3 row come only from moves that were actually played. They are given when one past game reached the next stage within the following full turn after the move. One full turn is the opponent's reply plus the original side's next move. Untried moves do not create a score of 45 or 75.
+
+Each tried move stores, for each strategy, the pairs that past games produced, or one count for each distinct pair. A pair is the stages already met at the destination in that game, together with the stages met after that same game's next full turn. A score is read from one pair. Destination stages from every game are not gathered into one set, and later stages into a second set, and those two sets are not then combined.
+
+Score 45 is a pair whose destination already had the foundation, and whose own full turn then reached progress. Score 60 is a pair that has the foundation and the progress. Score 75 is a pair whose destination already had the foundation and the progress, and whose own full turn then reached completion. One game with foundation and progress, and another game with foundation and then completion a turn later, show 60. They do not show 75. A game that earns 75 by itself still shows 75. When games earn different scores, the row shows the highest score that one game's pair earned, and the row says it came from a played turn.
+
+If this exact position and move have never been seen, and the position is king and pawn against king, the program fills the row from similar positions. Similar positions match on all of these:
+
+1. The signed file distance and rank distance of each king from the pawn.
+2. The pawn's rank.
+3. Whether the pawn is on the a-file or the h-file.
+4. Which side is to move.
+
+The comparison uses the normalized position from Step 15, so color and mirror are already folded in.
+
+No similar rule is defined for any other material, including king and rook against king and ordinary middlegames. There a never-seen move stays "never tried" and has no similar row.
+
+Sort order when the pawn side is to move:
+
+1. Proven wins, fewest moves to the goal first.
+2. Moves tried before, highest win rate for the pawn side first.
+3. Never-tried moves, in the Step 4 listing order.
+4. Proven draws.
+
+When the lone king is to move, the order is reversed:
+
+1. Proven draws.
+2. Never-tried moves, in the Step 4 listing order.
+3. Moves tried before, lowest win rate for the pawn side first.
+4. Proven wins, most moves to the goal first.
+
+In any other position there is no lone king and no proof. The order is: moves tried before, highest win rate for the side to move first, then never-tried moves in the Step 4 listing order.
+
+On the first game, and whenever the index has nothing for the position being played, every legal move is "never tried" and no row is proof. List 1 is still made.
+
+The game being played is not written into the index until it has finished. List 3 does not read the current game's later moves, because those moves have not been played.
+
+How a result becomes proven
+
+This is bookkeeping on positions the index already holds. It is not a search. The program does not generate a move that is absent from a stored legal-move listing.
+
+The goal in king and pawn against king:
+
+- The pawn is captured. That is a draw.
+- The side to move is stalemated. That is a draw. This is checked first, including in the position right after a promotion.
+- The pawn promotes to a queen or a rook, the defender is not stalemated, and the new piece cannot be captured on the defender's next move. That is a win for the pawn side. The distance of that position is 0.
+- The pawn promotes to a bishop or a knight. That is a draw.
+
+The goal in king and rook against king is checkmate for the side with the rook. Stalemate is a draw. The rook being captured is a draw. The proof shape below is the same, with the attacker in place of the pawn side.
+
+Distance is the number of individual moves until the goal. The pawn side's best move is the proven win with the smallest distance. The lone king's best defence is the proven line with the largest distance.
+
+When a game finishes, the program first updates the positions that game played, from the last move backward. Then every stored position that has a tried move into a position whose status just changed is updated as well, and so on backward, until no status changes. The index keeps, for each position, the list of stored positions that have a tried move into it, so this update reaches positions played only in earlier games.
+
+- Pawn side to move: the position is a proven win if any tried move leads to a proven win. Its distance is one plus the smallest such distance.
+- Lone king to move: the position is a proven win for the pawn side only if every legal move in its listing has been tried and every one of them leads to a proven win. Its distance is one plus the largest such distance.
+- Pawn side to move: the position is a proven draw if every legal move has been tried and none of them leads to a proven win, and every one of them leads to a proven draw.
+- Lone king to move: the position is a proven draw if any tried move leads to a proven draw.
+
+Closing rule for draws. In king and pawn against king the lone king can never win, so every position is either a win for the pawn side or a draw. A drawn position does not have to end in a capture or a stalemate: the pawn side can move its king back and forth forever, for example with an h-pawn against a king in the h8 corner. Those draws are proven by this rule:
+
+- A position P is closed when P and every stored position reachable from P by tried moves have every legal move in their listings tried.
+- When P is closed and is still not a proven win after the updates above, P is a proven draw.
+- Its distance is not given. A proven draw has no distance.
+
+When the closing rule is checked: after every backward update, the program checks every position that update touched, and every stored position with a tried move into one of them. A position is also checked when a game tries the last untried move in its listing.
+
+The same closing rule applies to king and rook against king, where the lone king also can never win.
+
+Until those conditions are met, the position is not proven. Tried moves still keep their win, draw, and loss counts from the finished games those moves were played in. Counts are not proof.
+
+A position is updated only through the backward update above. A position that is not played by the finished game and does not lead, by tried moves, to a position whose status changed is left as it was.
+
+Step 13: Creating List 4 from What Past Games Actually Did
+
+List 4 is made from the position index. It does not look ahead. It does not price a capture that never happened.
+
+For each List 3 move, List 4 records the exchanges that really happened in past games within one full turn after that move. One full turn is the opponent's reply plus the original side's next move. The record includes captures by either side and promotions.
+
+The values are Step 14.3, applied to what happened:
+
+- A pawn lost is −100.
+- A promotion to a queen is +800, because promotion adds the queen's 900 minus the pawn's 100.
+
+In king and pawn against king:
+
+- A move that let the defender take the pawn sorts to the bottom, at −100.
+- A move that led to promotion sorts to the top, at +800.
+
+When several past games played different continuations after the same move, each different continuation is its own List 4 row, with the number of times it was played. Continuations that played the same moves are one row.
+
+List 4 is sorted by Step 11 using those realized values. A move that has never been followed by a capture or a promotion in a past game adds no List 4 row. On the first game, List 4 is empty.
+
+A similar-position exchange may be shown only with the label "similar". It is not proof, and it is sorted after the exchanges from the exact position.
+
+Step 14: Definitions for Chess Strategy Recognition, Development Scoring, and Capture Valuation
+
+14.1 General Rules for Strategy Recognition
+
+Each chess strategy is evaluated separately for White and Black.
+
+The following rules apply:
+
+1. Relative rank 0 represents the evaluated player's back rank, and relative rank 7 represents that player's promotion rank.
+2. Strategy recognition uses geometric attacks. Therefore, a chess piece without an available legal move can still contribute to a forming strategy.
+3. List 2 considers only legal moves, and only when it is the evaluated player's turn, on the board being played.
+4. The history window for List 1 contains the evaluated player's previous four turns and the current turn.
+5. One full turn consists of two individual moves, also called two plies: the opponent's reply and the original side's next move. List 3 and List 4 use a full turn only when those two moves were actually played in a past game.
+6. A strategy appears in List 1 only when its foundation, progress, or completion conditions are satisfied in the present game's history window.
+7. List 1 does not raise a score by looking ahead. Scores 45 and 75 are not awarded on List 1.
+8. On List 3, a score of 45 or 75 is awarded from one past game when that game's played full turn after the move reached the next stage. Score 45 means that in that game the foundation was already met and progress occurred within that played full turn. Score 75 means that in that game the foundation and the progress were already met and completion occurred within that played full turn. The index keeps each game's destination stages and its later stages as one pair, as Step 12 says. Pairs are not split apart and joined with another game's stages. If several played games disagree, the highest score earned by one pair is the one shown, and the row still says it came from a played turn.
+
+14.2 Strategy Development Scoring
+
+List 1 uses only the present game:
+
+- Completion conditions satisfied now: Fully developed, score 100.
+- Foundation and progress exist now: Partially developed, score 60.
+- Foundation only, or progress only: Beginning to form, score 30.
+
+List 1 is sorted by stage, then by score, highest first, then by strategy name. Fully developed comes before partially developed, which comes before beginning to form.
+
+From the standard starting position, White's List 1 contains Central Pawn Occupation and King Shelter, each scoring 30.
+
+List 3's strategy notes use the same three scores, plus 45 and 75 when Step 14.1 rule 8 applies. List 3's row order is the order in Step 12, not this development order.
+
+14.3 Chess Piece Values and Capture Calculations
+
+The program uses the following piece values:
+
+- Pawn: 100
+- Knight: 320
+- Bishop: 330
+- Rook: 500
+- Queen: 900
+
+The king does not have a capture value because kings cannot legally be captured.
+
+A comparison value of 10,000 is used only when ranking the king within the Fork and Skewer strategy rules.
+
+Expected gain is the combined value of opposing pieces captured by the evaluated player during the exchange. Potential loss is the combined value of the evaluated player's pieces captured by the opponent. Net capture value is expected gain minus potential loss.
+
+Checkmate adds 100,000 to expected gain when the original player delivers checkmate, or to potential loss when the opponent's recapture delivers checkmate.
+
+List 2 runs this calculation on the board being played. List 4 does not run a hypothetical exchange. List 4 reports the net value of the captures and promotions that occurred in the played full turn.
+
+Captures in List 2 are sorted by:
+
+1. Highest net capture value.
+2. Highest expected gain.
+3. Lowest potential loss.
+4. Strategy name.
+5. Standard Algebraic Notation.
+6. Victim square.
+
+The same legal move may appear more than once when several strategies are associated with that capture.
+
+Capture evaluation rules, for List 2 and for valuing an exchange that a past game actually played:
+
+1. The initially evaluated capture is always played in the calculation.
+2. Each subsequent recapture may be declined.
+3. Only the cheapest legal recapturing piece is considered.
+4. A pawn that promotes still counts as a pawn when determining the cheapest recapturing piece.
+5. An exchange stops when continuing would produce an equal net value.
+6. Promotion adds the value of the promoted piece minus 100.
+7. An en passant capture assigns the captured pawn a value of 100. Subsequent recaptures target the capturing pawn's landing square.
+8. A capture belongs to a recognized strategy when the capturing piece participates in that strategy and the captured piece occupies one of its target squares.
+9. Kings are never treated as capture targets.
+
+Examples:
+
+- Queen captures an undefended pawn: gain 100, loss 0, net +100.
+- Queen captures a pawn, then a knight captures the queen: gain 100, loss 900, net −800.
+- Pawn captures a queen; the recapture would lose a rook: gain 900, loss 0, net +900.
+- Knight captures a queen, pawn recaptures, and our pawn captures that pawn: gain 1,000, loss 320, net +680.
+- Queen captures a rook, with a pawn as the cheaper recapturer: gain 500, loss 900, net −400.
+- En passant followed by a rook recapture: gain 100, loss 100, net 0.
+- Queen captures and delivers checkmate: gain 100,100, loss 0, net +100,100.
+- Pawn promotes to a queen and the queen is captured: gain 800, loss 900, net −100.
+- King and pawn against king, the defender takes the pawn: net −100.
+- King and pawn against king, the pawn promotes to a queen that cannot be taken at once: net +800.
+
+14.4 The 20 Chess Strategies
+
+These 20 strategies are the pre-made templates. Applied to the present game's five turns, they make List 1. Applied to a position that a past move led to, they are the strategy stages on a List 3 row.
+
+Strategy 1: Central Pawn Occupation
+
+This is taking the center. At the standard start its foundation is already met, so List 1 already contains it.
+
+- Foundation: A friendly pawn occupies the d-file or e-file.
+- Progress: A friendly pawn occupies d4 or e4 for White, or d5 or e5 for Black.
+- Completion: Both central squares are occupied by friendly pawns, and both pawns are defended.
+
+Strategy 2: Central Pawn Break
+
+- Foundation: The opponent has a central pawn, and a friendly pawn remains on a file from c through f.
+- Progress: A friendly pawn attacks an opposing central pawn.
+- Completion: The turn window contains a pawn capturing another pawn on the c-, d-, e-, or f-file.
+
+Strategy 3: Kingside Pawn Storm
+
+- Foundation: At least two friendly pawns remain on the f-, g-, or h-file, at least one has moved, and the friendly king is outside those files.
+- Progress: A participating pawn reaches relative rank 2.
+- Completion: Two participating pawns reach relative rank 3 or higher, and the friendly king occupies a file from a through d.
+
+Strategy 4: Queenside Minority Attack
+
+- Foundation: The evaluated player has fewer pawns than the opponent on the a-, b-, and c-files, while retaining at least one pawn on those files.
+- Progress: A friendly queenside pawn reaches relative rank 2.
+- Completion: A participating pawn reaches relative rank 3, and an opposing pawn on the a- through d-files is isolated or doubled.
+
+Strategy 5: King Shelter
+
+- Foundation: The king is on e1 or e8 with a remaining castling right, or is already on c1, g1, c8, or g8.
+- Progress: The king has castled, or no more than one piece remains between the king and a castling rook.
+- Completion: The king occupies a castled square, is not attacked, and its three shelter pawns remain unmoved.
+
+Strategy 6: Opposite-Side Castling Attack
+
+- Foundation: The friendly king occupies the home rank on the a–c or f–h files, while the opposing king occupies the opposite wing.
+- Progress: A friendly pawn on the opposing king's wing reaches relative rank 2.
+- Completion: That pawn reaches relative rank 3, and a friendly rook or queen occupies a half-open file on that wing.
+
+Strategy 7: Fianchetto
+
+- Foundation: The b-pawn or g-pawn has advanced one square, or a friendly bishop already occupies b2, g2, b7, or g7.
+- Progress: A friendly bishop occupies one of those fianchetto squares.
+- Completion: The bishop attacks at least one of the central squares d4, d5, e4, or e5.
+
+Strategy 8: Open-File Control
+
+- Foundation: At least one file contains no friendly pawn, and a friendly rook or queen remains on the board.
+- Progress: A friendly rook or queen occupies a file without a friendly pawn.
+- Completion: A fully open file contains more friendly major pieces than opposing major pieces.
+
+Strategy 9: Seventh-Rank Invasion
+
+- Foundation: A friendly rook or queen exists, and at least one file contains no friendly pawn.
+- Progress: A friendly major piece reaches relative rank 5.
+- Completion: A friendly rook or queen reaches the opponent's second rank and attacks an opposing piece or pawn.
+
+Strategy 10: Passed-Pawn Advance
+
+- Foundation: A friendly pawn has no opposing pawn ahead of it on its own file or either adjacent file.
+- Progress: The passed pawn reaches relative rank 3.
+- Completion: The passed pawn reaches relative rank 5 or higher and is defended.
+
+Strategy 11: Isolated-Pawn Attack
+
+- Foundation: An opposing pawn has no friendly neighboring pawn on an adjacent file.
+- Progress: A friendly piece attacks that opposing pawn, or a friendly rook or queen shares its file.
+- Completion: The number of attacks against the isolated pawn exceeds the number of defenses.
+
+Strategy 12: Backward-Pawn Pressure
+
+- Foundation: An opposing pawn's advance square is attacked by a friendly pawn, is not defended by an opposing pawn, and lies on a file without a friendly pawn.
+- Progress: A friendly rook or queen occupies the opposing pawn's file.
+- Completion: That major piece remains on the file, and the opposing pawn's advance square is occupied or attacked.
+
+Strategy 13: Knight Outpost
+
+- Foundation: A square on relative ranks 3 through 6 is empty or contains a friendly knight, is defended by a friendly pawn, and cannot still be attacked by an opposing pawn.
+- Progress: A friendly knight occupies or attacks that square.
+- Completion: A friendly knight occupies the outpost square.
+
+Strategy 14: Bishop Pair
+
+- Foundation: The evaluated player has two bishops, while the opponent has fewer than two.
+- Progress: At least one friendly bishop has moved away from the back rank.
+- Completion: At least one file from c through f contains no pawns, and a friendly bishop has three squares of unobstructed travel.
+
+Strategy 15: Pin
+
+- Foundation: A friendly bishop, rook, or queen aligns with an opposing front piece and a more valuable rear piece or king.
+- Progress: The attacking line to the opposing front piece is unobstructed.
+- Completion: The rear piece is the opposing king, or a second friendly piece also attacks the front piece.
+
+Strategy 16: Discovered Attack
+
+- Foundation: Exactly one friendly piece stands between a friendly sliding piece and an opposing piece other than a pawn.
+- Progress: The intervening friendly piece has a legal move that takes it off the attacking line.
+- Completion: That move captures a piece or delivers check, while the sliding piece continues attacking the original target.
+
+Strategy 17: Fork
+
+- Foundation: A piece's current square or a possible legal move creates attacks against two opposing pieces other than pawns.
+- Progress: Two opposing target pieces are currently attacked.
+- Completion: Both targets satisfy the strategy's value conditions.
+
+For a fork created by a sliding piece, its targets qualify only when they are kings, undefended, or at least as valuable as the attacking piece.
+
+Strategy 18: Skewer
+
+- Foundation: A friendly sliding piece aligns with two opposing pieces, and the nearer opposing piece is at least as valuable as the farther piece.
+- Progress: The line to the front opposing piece is unobstructed, and the front piece is the king or is strictly more valuable than the rear piece.
+- Completion: The front piece is the king, or it is more valuable than the attacking sliding piece while the rear piece is undefended or worth at least as much as the attacker.
+
+Strategy 19: Major-Piece Battery
+
+- Foundation: Two friendly rooks or queens share a rank or file, no more than two pieces stand between them, and at least one participating major piece has moved from its original square.
+- Progress: No more than one piece remains between the participating major pieces.
+- Completion: The line between the participating pieces is clear, and they share a half-open file or one attacks an opposing piece along that line.
+
+Strategy 20: Promotion
+
+- Foundation: A friendly pawn reaches relative rank 4 or higher.
+- Progress: The pawn reaches relative rank 5 or higher.
+- Completion: The pawn has an available legal promotion move.
+
+A pawn blocked on the seventh rank remains at the progress stage until a legal promotion move becomes available.
+
+14.5 Applying These Definitions to the Four Lists
+
+List 1 is the templates applied to the present game's five turns. Its scores are 100, 60, and 30.
+
+List 2 is the legal captures of those List 1 strategies, priced on the board being played.
+
+List 3 is one row per legal move of the position being played, looked up in the position index. Its order is the proven-win order in Step 12.
+
+List 4 is the captures and promotions that past games actually played within one full turn after a List 3 move, priced by Step 14.3.
+
+14.6 How the Steps Fit Together
+
+Steps 4, 5, and 7 keep the two history files for the game being played. Step 6 says there is no future search and no future file. Steps 8 through 11 make Lists 1 and 2 from the present game. Steps 12 and 13 make Lists 3 and 4 from the position index. Step 14 supplies the templates and the values. Step 15 stores finished games as one entry per distinct position.
+
+============================================================
+STEP 15: ONE ENTRY PER POSITION
+============================================================
+
+15.1 Why the index exists
+
+The history files keep only four past turns and the current turn. A long game would lose its opening if those files were the only record. Copying a future-search file at every move is what made the archive too large. This step does not do that.
+
+When a game finishes, each position it played is merged into one shared index. The key is the position itself. If that position was already stored, the program updates the existing entry. It does not add a second entry. The index grows with the number of different positions, not with the number of games.
+
+For any saved move, the future is the moves that come after it in the same game. Those moves are their own position entries. No future line is stored on the earlier move.
+
+15.2 What is stored for one position
+
+The record is compact. It is not a copy of the two history files. It holds:
+
+1. The position key. For king and pawn against king, and king and rook against king, it is normalized as Step 15.3 describes. For any other position it is every piece and its square, the side to move, the castling rights, and the en passant square, with no flip and no mirror. The key is built from the Step 4 listing, not from a FEN.
+2. The side to move.
+3. The legal moves, in the Step 4 order.
+4. For each move that a finished game has tried: the destination position, how many times it was played, the wins, draws, and losses counted as Step 12 says, and for each strategy the pairs of destination stages and stages after that same game's next full turn, and the distance if that destination is proven. The played count and the result counts are kept separately for each bank (Step 15.5).
+5. The proven status of this position, if it is proven: win or draw, and the distance for a win.
+6. The positions that have a tried move into this position. Step 12 uses this list for the backward update.
+
+A move that appears in the legal-move listing and has a played count of zero is never tried. That fact is what lets the index prove a result, rather than only count wins.
+
+15.3 The position key for king and pawn against king
+
+The counted set is White's king, White's pawn, and Black's king, pawn on ranks 2 through 7, no castling and no en passant. A position is legal when all three pieces stand on different squares, the kings are not adjacent, and the side that is not to move is not in check. That set contains 331,352 positions.
+
+If Black has the pawn, the board is flipped so the pawn side is stored as White. A left-right mirror is stored with the pawn on files a through d only. Files e through h reflect onto d through a. Under that mirror the index holds 165,676 positions. Moves are reflected back to the real board when a list is shown.
+
+At about eight legal moves in a position, the full index is on the order of 1.3 million move entries. It stops growing once every position has been seen.
+
+King and rook against king uses the same kind of key: the attacker's king and rook against the lone king, with color and mirror folded the same way. This text does not give a count for that endgame.
+
+15.4 One finished game, then the index
+
+A game enters the index only after it has a result, or after it is stopped. The game being played is absent.
+
+A stopped game has no result. Its moves still count as tried, and its positions take part in proof, because a proof depends only on which moves were tried and where they led. A stopped game adds nothing to the win, draw, and loss counts. If the program is killed while a game is being saved, the next start marks that game stopped, without changing the complete lines already written, and merges it as a stopped game.
+
+Drill games for one run are appended to one shared file. A finished game does not replace that whole file. A final line with no newline is not a move. It is dropped, and the file is cut back to its last complete line. The game that line belonged to is marked stopped. The program then merges the games that follow in the bank. One cut-off line does not stop the rest of the bank.
+
+A game is applied to the index only after every move line in it has been read and accepted. Each move is checked against the legal-move listing on its own line and against the legal moves of the position on that line. If a move is illegal, or is missing from either list, that game is reported and not merged. The index is left as it was before that game. Games after it are still merged.
+
+The index file begins with the header FORMING-CHESS-INDEX 2. That version is the one that stores the stage pairs in Step 12. Reading the index checks that every line type has all of its fields before it uses one. A short line, including a short K line, returns an error that names the line number. An older header, a short line, or any other index that cannot be read is rejected. The program says so and rebuilds the index from the saved game files. It does not stop.
+
+Games saved by the older six-move program can be merged the same way. Their history sections give the position, the legal moves, and the move played. Their future-search sections are not read. Answering N at the start of a normal game saves nothing and deletes nothing.
+
+A saved move is one complete line: the position, the legal moves, the move played, and the strategy stages. A normal game keeps those lines in its own file. A drill game appends them to the one shared file for the run. A kill can leave a partial last line. The next start cuts that line off, as the rule above says, and does not treat it as a move. The result is written when the game ends. The program then updates the shared index and the proof status of the positions that game touched.
+
+The game file is not a copy of a future-search file. Saved games are not committed to Git.
+
+15.5 Banks
+
+Banks are named lists of games, kept under ai_learning/banks/. The general bank holds finished games that a person played and agreed to save. The drill bank holds drill games. Step 15.6 writes only to the drill bank.
+
+There is one shared index. Each tried move keeps its played count and its result counts separately for each bank. Proven statuses are shared by all banks, because a proof does not depend on who played the moves.
+
+By default List 3 and List 4 add the counts of every bank. A task may select one bank. While it is selected, List 3 and List 4 show only that bank's counts and continuations. Proven statuses are still shown. When the task ends, the default returns. List 1 and List 2 do not read a bank. Creating a bank does not change the two history files.
+
+15.6 The drill
+
+The command is:
+
+drill
+drill <seed>
+
+The default seed is 1. The same seed always produces the same sequence of starting positions.
+
+A start is a legal king-and-pawn position from the normalized set in Step 15.3. The drill takes starts in order of the pawn's rank, seventh rank first, then sixth, and so on down to the second. Within one rank the seed picks the order. Positions near promotion are therefore proven first, and earlier starts can use them at once. The drill plays both sides from each start.
+
+Move choice for the pawn side, in order:
+
+1. The proven win with the smallest distance, if one exists.
+2. Otherwise the first never-tried legal move, in the Step 4 order.
+3. Otherwise the tried move with the best win rate for the pawn side.
+
+Move choice for the lone king, in order:
+
+1. A proven draw, if one exists.
+2. Otherwise the first never-tried legal move, in the Step 4 order.
+3. Otherwise, when every legal move has been tried, the proven win for the pawn side with the largest distance, if every move is one.
+4. Otherwise the tried move with the lowest win rate for the pawn side.
+
+The lone king tries its untried moves before it plays a move already known to lose. A lone-king position can only be proven after every one of its moves has been tried.
+
+A drill game ends when:
+
+- a goal of Step 12 is reached (win or draw);
+- the same position occurs for the third time in that game; or
+- 100 individual moves pass with no pawn move and no capture.
+
+The last two endings are stored as "draw by rule". They add to the draw counts. They are never proof.
+
+A similar-position row is never treated as a proven move. While a never-tried legal move exists, the drill plays that move rather than a win rate from another position.
+
+The drill does not ask whether to save. Each finished drill game is added to the drill bank and merged into the index.
+
+A starting position is solved when every position reachable from it is proven. The top row of List 3 is then the perfect move for the side to move. Opposition and the key squares are learned from the past games. They are not coded as a special search.
+
+Two limits belong in the plan:
+
+1. Proving the whole endgame takes many drill games. About 1.3 million moves must each be tried at least once, and one game tries at most about one new move per individual move it plays, so at least about 45,000 games are needed, and probably many more. Taking starts from the seventh rank down means positions near promotion are proven first.
+2. The proof works because these endgames repeat exact positions. In an open middlegame a position rarely returns. List 3 there shows exact past positions when they exist, has no similar rows, and does not mark rows as proof. The closing rule for draws does not apply there.
+
+15.7 What is not done
+
+- No future-search file is written, copied, or read.
+- No look-ahead is performed to build List 3 or List 4.
+- A FEN is not used to rebuild a history file or a search. The position key identifies the index entry. The legal moves stored with that entry are the Step 4 listing.
+- The two history files are not copied into the archive.
+- Win counts alone do not mark a position proven.
+- A similar position is not proof.
+- Scores 45 and 75 are not awarded from untried moves, and they are not awarded on List 1.
+- Scores 45 and 75 are not made by joining one game's destination stages with another game's later stages.
+- A promotion answer other than q, r, b, or n does not become a queen.
+- A short index line does not stop the program. An index that cannot be read is rebuilt from the saved game files.
+- A cut-off game line does not stop later games from being merged.
+- A game with a move missing from its own listing, or from the position's legal moves, does not leave its earlier moves in the index.
+- Drill games are not saved by replacing the whole bank file for each game.
+
+15.8 Tests to write when this plan is implemented
+
+These tests are part of the plan.
+
+- With an empty index, List 1 at the standard start is Central Pawn Occupation and King Shelter, each scoring 30. List 3 lists every legal move as never tried. List 4 is empty.
+- A finished drill game adds compact records and does not write a future-search file. Playing the same position again updates the existing index entry.
+- The king-and-pawn key set has 331,352 legal positions before the mirror and 165,676 after it. A mirrored position and its reflection share one entry.
+- A promotion to a queen that the defender cannot capture on the next move is a proven win with distance 0. A captured pawn is a proven draw. A stalemate is a proven draw.
+- With the pawn side to move, one tried move into a proven win makes the position a proven win. With the lone king to move, the position is a proven win for the pawn side only after every legal move has been tried and all of them lead to proven wins.
+- List 3 sorts a proven win ahead of a tried move, a tried move ahead of a never-tried move, and a proven draw last, when the pawn side is to move. The lone king uses the reverse order.
+- A row filled from a similar position is labeled similar and is not counted as proof by the drill.
+- List 4 shows a played capture of the pawn at −100 and a played promotion at +800, and it does not invent an exchange that no game played.
+- The same seed produces the same first drill start. Two different seeds may differ.
+- Drill starts are taken seventh rank first, then sixth, down to the second.
+- A promotion that leaves the lone king stalemated is a draw, not a win. A promotion to a rook that cannot be captured is a win. A promotion to a bishop or a knight is a draw.
+- A position played only in an earlier game becomes a proven win when a later game proves the position its tried move leads to.
+- An h-pawn position with the lone king in the h8 corner, once closed and not a proven win, is a proven draw by the closing rule.
+- With the lone king to move, an untried move is played before a move already proven to lose.
+- A drill game that repeats a position three times, or plays 100 individual moves with no pawn move and no capture, ends as a draw by rule. It adds to the draw count and proves nothing.
+- A position and its mirror image list their moves in the same order.
+- A stopped game marks its moves as tried and adds nothing to the result counts. A game left unfinished by a killed program is marked stopped on the next start.
+- Selecting one bank changes the counts on List 3 and List 4 and does not change any proven status.
+- Two different continuations after the same move are two List 4 rows, each with its played count.
+- A middlegame position has an exact key from all its pieces, the side to move, the castling rights, and the en passant square, and never a similar row.
+- In king and rook against king, a game where the rook is captured is a proven draw.
+- The closing rule is checked on every position a backward update touched and on every position leading into them, and a position whose last untried move is tried is checked too.
+- In a middlegame position, List 3 counts wins, draws and losses for the side to move and sorts tried moves by that side's win rate, before never-tried moves.
+- Two games play the same move. One has foundation and progress. The other has foundation, then completion a turn later. List 3 shows 60 for that move, and it does not show 75. A game that earns 75 by itself still shows 75.
+- At a promotion, an answer other than q, r, b, or n, including an empty line, asks for the piece again and does not move the pawn. End of input cancels the move.
+- An index file with a short K line returns an error that names the line number. An older header than FORMING-CHESS-INDEX 2, or any index that cannot be read, is rebuilt from the saved game files, and the program keeps running.
+- A game file whose last line has no newline is cut back to its last complete line. That game is stopped. A later game in the same bank is still merged.
+- A game whose second move is missing from the listing on its line, or from that position's own legal moves, adds nothing to the index. The first move of that game is absent as well. Later games still merge.
+- No play test runs the six-ply search or requires 124,132,536 strategy-search nodes.
+
+============================================================
+WHAT THIS PLAN DECIDES
+============================================================
+
+1. There is no future search and there are no future files. The future of a saved move is the later moves of that same finished game.
+2. Finished games are stored once per distinct position. King and pawn against king is 331,352 legal positions, or 165,676 after mirrors are folded in.
+3. List 1 is the present game's five turns and the 20 templates. It does not read the index. At the start it contains taking the center, and King Shelter, each at 30.
+4. List 3 is one row per legal move, looked up in the index: proven win in N moves, proven draw, tried before, or never tried. Similar positions exist only for king and pawn against king, are labeled, and are not proof.
+5. Scores 45 and 75 are taken from one game's paired stages. Stages from two games are not joined into a higher score. List 1 does not use them.
+6. List 4 is the captures and promotions that past games actually made within one full turn after the move. A lost pawn is −100. A promotion is +800.
+7. The drill plays both sides from seeded king-and-pawn starts, seventh rank first. The pawn side prefers a proven win; the lone king prefers a proven draw and tries untried moves before a known loss. Games end at a goal, a threefold repetition, or 100 moves with no pawn move or capture. Compact records go to the drill bank.
+8. The first game has every List 3 move as never tried, and an empty List 4. List 1 still works.
+9. Proofs flow backward to every stored position that leads into a changed position. Drawn positions that go round in circles are proven by the closing rule.
+10. Proven statuses are shared by all banks. Counts are kept per bank.
+11. A promotion answer other than q, r, b, or n asks again. End of input cancels the move. Drill games are appended to one shared file. A final line with no newline is dropped and the file is cut back to its last complete line. A short index line names its line number. An index that cannot be read, including a header older than FORMING-CHESS-INDEX 2, is rebuilt from the saved games. A move missing from its line, or from the position's own legal moves, leaves that whole game out, and later games are still merged.
