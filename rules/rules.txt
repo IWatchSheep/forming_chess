@@ -486,7 +486,7 @@ A game is applied to the index only after every move line in it has been read an
 
 The index file begins with the header FORMING-CHESS-INDEX 2. That version is the one that stores the stage pairs in Step 12. Reading the index checks that every line type has all of its fields before it uses one. A short line, including a short K line, returns an error that names the line number. An older header, a short line, or any other index that cannot be read is rejected. The program says so and rebuilds the index from the saved game files. It does not stop.
 
-Games saved by the older six-move program can be merged the same way. Their history sections give the position, the legal moves, and the move played. Their future-search sections are not read. Answering N at the start of a normal game saves nothing and deletes nothing.
+Answering N at the start of a normal game saves nothing and deletes nothing.
 
 A saved move is one complete line: the position, the legal moves, the move played, and the strategy stages. A normal game keeps those lines in its own file. A drill game appends them to the one shared file for the run. A kill can leave a partial last line. The next start cuts that line off, as the rule above says, and does not treat it as a move. The result is written when the game ends. The program then updates the shared index and the proof status of the positions that game touched.
 
